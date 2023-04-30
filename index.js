@@ -18,14 +18,113 @@
 
 const { log } = console;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const stopButton = document.getElementById("stop");
-  const stopLight = document.querySelector(".light.stop");
+// a function to turn off all the lights
+const turnOff = () => {
+  const turnedOn = document.querySelectorAll(".on");
 
-  stopButton.addEventListener("click", (e) => {
-    log("evt ibj", e);
-    stopLight.classList.add("on");
+  if (turnedOn.length) {
+    turnedOn.forEach((element) => {
+      element.classList.remove("on");
+    });
+  }
+};
+
+// create a delay function
+const delay = (ms) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
   });
 
-  // ...
+document.addEventListener("DOMContentLoaded", () => {
+  // selecting buttons
+  const stopButton = document.getElementById("stop");
+  const cautionButton = document.getElementById("caution");
+  const goButton = document.getElementById("go");
+  const autoStartButton = document.getElementById("autoStart");
+  const autoStopButton = document.getElementById("autoStop");
+  let shouldStop = false;
+
+  // selecting lights
+  const lights = document.querySelectorAll(".light");
+
+  // a function loop over infinitely with a delay in the loop
+  const autoStart = async (iterable = lights, ms = 500) => {
+    shouldStop = false;
+    while (!shouldStop) {
+      for (let i = 0; i < iterable.length; i++) {
+        turnOff();
+        iterable[i].classList.add("on");
+        await delay(ms);
+        turnOff();
+      }
+    }
+    turnOff();
+  };
+
+  //   a function to stop the infinite loop
+  const autoStop = () => {
+    shouldStop = true;
+  };
+
+  autoStartButton.addEventListener("click", () => {
+    log("start");
+    autoStart();
+  });
+
+  autoStopButton.addEventListener("click", () => {
+    log("stop");
+    autoStop();
+  });
+
+  // listening to clicks and turning lights on/off
+  //   red light
+  stopButton.addEventListener("click", (e) => {
+    log("red on", e);
+    turnOff();
+    lights[0].classList.add("on");
+  });
+
+  //   yellow light
+  cautionButton.addEventListener("click", (e) => {
+    log("yellow on", e);
+    turnOff();
+    lights[1].classList.add("on");
+  });
+
+  // green light
+  goButton.addEventListener("click", (e) => {
+    log("green on", e);
+    turnOff();
+    lights[2].classList.add("on");
+  });
+
+  //   listening to hover events
+  //   red light
+  lights[0].addEventListener("mouseover", () => {
+    lights[0].classList.add("on");
+
+    lights[0].addEventListener("mouseout", () => {
+      lights[0].classList.remove("on");
+    });
+  });
+
+  //   yellow light
+  lights[1].addEventListener("mouseover", () => {
+    lights[1].classList.add("on");
+
+    lights[1].addEventListener("mouseout", () => {
+      lights[1].classList.remove("on");
+    });
+  });
+
+  //   green light
+  lights[2].addEventListener("mouseover", () => {
+    lights[2].classList.add("on");
+
+    lights[2].addEventListener("mouseout", () => {
+      lights[2].classList.remove("on");
+    });
+  });
 });
